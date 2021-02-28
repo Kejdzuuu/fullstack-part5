@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
+import NewBlogForm from './components/NewBlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -14,6 +16,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notificationMsg, setNotificationMsg] = useState(null)
   const [notificationType, setNotificationType] = useState('')
+  const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -71,6 +74,10 @@ const App = () => {
     try {
       const response = await blogService.create(blog)
       setBlogs(blogs.concat(response))
+      setBlogFormVisible(false)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
       showNotification(`${blog.title} by ${blog.author} added`, 'info')
     } catch (exception) {
       console.log('Something went wrong')
@@ -78,68 +85,42 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({target}) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({target}) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
+  const newBlogForm = () => {
+    const hideWhenFormVisible = {display: blogFormVisible ? 'none' : ''}
+    const showWhenFormVisible = {display: blogFormVisible ? '' : 'none'}
 
-  const newBlogForm = () => (
-    <form onSubmit={addNewBlog}>
+    return (
       <div>
-        title:
-        <input
-          type="text"
-          value={title}
-          name="Title"
-          onChange={({target}) => setTitle(target.value)}
-        />
+        <div style={hideWhenFormVisible}>
+          <button onClick={() => setBlogFormVisible(true)}>new blog</button>
+        </div>
+        <div style={showWhenFormVisible}>
+          <NewBlogForm
+            handleSubmit={addNewBlog}
+            handleTitleChange={({target}) => setTitle(target.value)}
+            handleAuthorChange={({target}) => setAuthor(target.value)}
+            handleUrlChange={({target}) => setUrl(target.value)}
+            title={title}
+            author={author}
+            url={url}
+          />
+          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
+        </div>
       </div>
-      <div>
-        author:
-        <input
-          type="text"
-          value={author}
-          name="Author"
-          onChange={({target}) => setAuthor(target.value)}
-        />
-      </div>
-      <div>
-        url:
-        <input
-          type="text"
-          value={url}
-          name="Url"
-          onChange={({target}) => setUrl(target.value)}
-        />
-      </div>
-      <button type="submit">add blog</button>
-    </form>
-  )
+    )
+  }
 
   if (user === null) {
     return (
     <div>
       <h2>Log in</h2>
-        {loginForm()}
+        <LoginForm 
+          handleSubmit={handleLogin}
+          handleUsernameChange={({target}) => setUsername(target.value)}
+          handlePasswordChange={({target}) => setPassword(target.value)}
+          username={username}
+          password={password}
+        />
         <Notification message={notificationMsg} type={notificationType} />
       </div>
     )
@@ -150,16 +131,15 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={notificationMsg} type={notificationType} />
       <div>
-        {user.hasOwnProperty('name') === true ?
-          <p>logged in as {user.name}</p> :
-          <p>logged in as {user.username}</p>
-        }
-        <button onClick={handleLogout}>logout</button>
+        <p>
+          {user.hasOwnProperty('name') === true ?
+            `logged in as ${user.name}` :
+            `logged in as ${user.username}`
+          }
+          <button onClick={handleLogout}>logout</button>
+        </p>
       </div>
-      <h2>create new</h2>
-      <div>
-        {newBlogForm()}
-      </div>
+      {newBlogForm()}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
