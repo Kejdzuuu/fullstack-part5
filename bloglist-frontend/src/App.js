@@ -8,9 +8,6 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -62,23 +59,12 @@ const App = () => {
     window.location.reload()
   }
 
-  const addNewBlog = async (event) => {
-    event.preventDefault()
-
-    const blog = {
-      title: title,
-      author: author,
-      url: url
-    }
-
+  const addNewBlog = async (newBlog) => {
     try {
-      const response = await blogService.create(blog)
+      const response = await blogService.create(newBlog)
       setBlogs(blogs.concat(response))
       setBlogFormVisible(false)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      showNotification(`${blog.title} by ${blog.author} added`, 'info')
+      showNotification(`${response.title} by ${response.author} added`, 'info')
     } catch (exception) {
       console.log('Something went wrong')
       showNotification('blog could not be added', 'error')
@@ -96,13 +82,7 @@ const App = () => {
         </div>
         <div style={showWhenFormVisible}>
           <NewBlogForm
-            handleSubmit={addNewBlog}
-            handleTitleChange={({target}) => setTitle(target.value)}
-            handleAuthorChange={({target}) => setAuthor(target.value)}
-            handleUrlChange={({target}) => setUrl(target.value)}
-            title={title}
-            author={author}
-            url={url}
+            addNewBlog={addNewBlog}
           />
           <button onClick={() => setBlogFormVisible(false)}>cancel</button>
         </div>
