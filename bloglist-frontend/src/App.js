@@ -71,6 +71,15 @@ const App = () => {
     }
   }
 
+  const likeBlog = async (id, blog) => {
+    try {
+      const response = await blogService.update(id, blog)
+      setBlogs(blogs.map(n => n.id === id ? {...n, ...{likes: response.likes}} : n))
+    } catch (exception) {
+      showNotification('couldn\'t like blog', 'error')
+    }
+  }
+
   const newBlogForm = () => {
     const hideWhenFormVisible = {display: blogFormVisible ? 'none' : ''}
     const showWhenFormVisible = {display: blogFormVisible ? '' : 'none'}
@@ -121,7 +130,7 @@ const App = () => {
       </div>
       {newBlogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={likeBlog}/>
       )}
     </div>
   )

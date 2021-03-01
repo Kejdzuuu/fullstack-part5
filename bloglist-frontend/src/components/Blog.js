@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
   const [buttonText, setButtonText] = useState('view')
 
@@ -19,6 +19,19 @@ const Blog = ({ blog }) => {
     setButtonText(buttonText === 'view' ? 'hide' : 'view')
   }
 
+  const handleLikeButton = (event) => {
+    event.preventDefault()
+
+    const updatedBlog = {
+      user: blog.user,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+    likeBlog(blog.id, updatedBlog)
+  }
+
   return (
     <div style={blogStyle}>
       <div>
@@ -29,7 +42,7 @@ const Blog = ({ blog }) => {
         <div>{blog.url}</div>
         <div>
           {blog.likes}
-          <button>like</button>
+          <button onClick={handleLikeButton}>like</button>
         </div>
         <div>{blog.user.name ? blog.user.name : blog.user.username}</div>
       </div>
