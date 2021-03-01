@@ -62,6 +62,10 @@ const App = () => {
   const addNewBlog = async (newBlog) => {
     try {
       const response = await blogService.create(newBlog)
+      response.user = {
+        username: user.username,
+        name: user.name
+      }
       setBlogs(blogs.concat(response))
       setBlogFormVisible(false)
       showNotification(`${response.title} by ${response.author} added`, 'info')
@@ -77,6 +81,15 @@ const App = () => {
       setBlogs(blogs.map(n => n.id === id ? {...n, ...{likes: response.likes}} : n))
     } catch (exception) {
       showNotification('couldn\'t like blog', 'error')
+    }
+  }
+
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id)
+      setBlogs(blogs.filter(n => n.id !== id))
+    } catch (exception) {
+      showNotification('couldn\'t delete blog', 'error')
     }
   }
 
@@ -130,7 +143,7 @@ const App = () => {
       </div>
       {newBlogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={likeBlog}/>
+        <Blog key={blog.id} blog={blog} user={user.username} likeBlog={likeBlog} deleteBlog={deleteBlog}/>
       )}
     </div>
   )

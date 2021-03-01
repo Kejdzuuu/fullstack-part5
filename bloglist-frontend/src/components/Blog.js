@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, likeBlog }) => {
+const Blog = ({ user, blog, likeBlog, deleteBlog }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
   const [buttonText, setButtonText] = useState('view')
 
@@ -13,6 +13,7 @@ const Blog = ({ blog, likeBlog }) => {
   }
 
   const showWhenDetailsVisible = {display: detailsVisible ? '' : 'none'}
+  const removeBlogButtonVisibility = {display: (user === blog.user.username) ? '' : 'none'}
 
   const toggleVisibility = () => {
     setDetailsVisible(!detailsVisible)
@@ -32,6 +33,14 @@ const Blog = ({ blog, likeBlog }) => {
     likeBlog(blog.id, updatedBlog)
   }
 
+  const handleRemoveButton = (event) => {
+    event.preventDefault()
+    const result = window.confirm('Delete this blog?')
+    if (result) {
+      deleteBlog(blog.id)
+    }
+  }
+
   return (
     <div style={blogStyle}>
       <div>
@@ -45,6 +54,9 @@ const Blog = ({ blog, likeBlog }) => {
           <button onClick={handleLikeButton}>like</button>
         </div>
         <div>{blog.user.name ? blog.user.name : blog.user.username}</div>
+        <div style={removeBlogButtonVisibility}>
+          <button onClick={handleRemoveButton}>remove</button>
+        </div>
       </div>
     </div>
   )
