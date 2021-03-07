@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
 import blogService from './services/blogs'
@@ -13,7 +14,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notificationMsg, setNotificationMsg] = useState(null)
   const [notificationType, setNotificationType] = useState('')
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -60,6 +60,7 @@ const App = () => {
   }
 
   const addNewBlog = async (newBlog) => {
+    newBlogFormRef.current.toggleVisibility()
     try {
       const response = await blogService.create(newBlog)
       response.user = {
@@ -67,7 +68,6 @@ const App = () => {
         name: user.name
       }
       setBlogs(blogs.concat(response))
-      setBlogFormVisible(false)
       showNotification(`${response.title} by ${response.author} added`, 'info')
     } catch (exception) {
       console.log('Something went wrong')
@@ -93,38 +93,27 @@ const App = () => {
     }
   }
 
-  const newBlogForm = () => {
-    const hideWhenFormVisible = {display: blogFormVisible ? 'none' : ''}
-    const showWhenFormVisible = {display: blogFormVisible ? '' : 'none'}
+  const newBlogFormRef = useRef()
 
-    return (
-      <div>
-        <div style={hideWhenFormVisible}>
-          <button onClick={() => setBlogFormVisible(true)}>new blog</button>
-        </div>
-        <div style={showWhenFormVisible}>
-          <NewBlogForm
-            addNewBlog={addNewBlog}
-          />
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
-      </div>
-    )
-  }
+  const newBlogForm = () => (
+    <Togglable buttonLabel='add blog' ref={newBlogFormRef}>
+      <NewBlogForm addNewBlog={addNewBlog} />
+    </Togglable>
+  )
 
   if (user === null) {
     return (
     <div>
       <h2>Log in</h2>
-        <LoginForm 
-          handleSubmit={handleLogin}
-          handleUsernameChange={({target}) => setUsername(target.value)}
-          handlePasswordChange={({target}) => setPassword(target.value)}
-          username={username}
-          password={password}
-        />
-        <Notification message={notificationMsg} type={notificationType} />
-      </div>
+      <LoginForm 
+        handleSubmit={handleLogin}
+        handleUsernameChange={({target}) => setUsername(target.value)}
+        handlePasswordChange={({target}) => setPassword(target.value)}
+        username={username}
+        password={password}
+      />
+      <Notification message={notificationMsg} type={notificationType} />
+    </div>
     )
   }
 
