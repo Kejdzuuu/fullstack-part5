@@ -12,8 +12,8 @@ const Blog = ({ user, blog, likeBlog, deleteBlog }) => {
     marginBottom: 5
   }
 
-  const showWhenDetailsVisible = {display: detailsVisible ? '' : 'none'}
-  const removeBlogButtonVisibility = {display: (user === blog.user.username) ? '' : 'none'}
+  const showWhenDetailsVisible = { display: detailsVisible ? '' : 'none' }
+  const removeBlogButtonVisibility = { display: (user === blog.user.username) ? '' : 'none' }
 
   const toggleVisibility = () => {
     setDetailsVisible(!detailsVisible)

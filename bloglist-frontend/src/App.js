@@ -18,7 +18,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a,b) => b.likes - a.likes))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.clear()
     window.location.reload()
   }
@@ -78,7 +78,7 @@ const App = () => {
   const likeBlog = async (id, blog) => {
     try {
       const response = await blogService.update(id, blog)
-      setBlogs(blogs.map(n => n.id === id ? {...n, ...{likes: response.likes}} : n))
+      setBlogs(blogs.map(n => n.id === id ? { ...n, ...{ likes: response.likes } } : n))
     } catch (exception) {
       showNotification('couldn\'t like blog', 'error')
     }
@@ -103,17 +103,17 @@ const App = () => {
 
   if (user === null) {
     return (
-    <div>
-      <h2>Log in</h2>
-      <LoginForm 
-        handleSubmit={handleLogin}
-        handleUsernameChange={({target}) => setUsername(target.value)}
-        handlePasswordChange={({target}) => setPassword(target.value)}
-        username={username}
-        password={password}
-      />
-      <Notification message={notificationMsg} type={notificationType} />
-    </div>
+      <div>
+        <h2>Log in</h2>
+        <LoginForm
+          handleSubmit={handleLogin}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          username={username}
+          password={password}
+        />
+        <Notification message={notificationMsg} type={notificationType} />
+      </div>
     )
   }
 
@@ -123,7 +123,7 @@ const App = () => {
       <Notification message={notificationMsg} type={notificationType} />
       <div>
         <p>
-          {user.hasOwnProperty('name') === true ?
+          {user.name ?
             `logged in as ${user.name}` :
             `logged in as ${user.username}`
           }
