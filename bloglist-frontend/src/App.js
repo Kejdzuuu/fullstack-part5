@@ -78,7 +78,7 @@ const App = () => {
   const likeBlog = async (id, blog) => {
     try {
       const response = await blogService.update(id, blog)
-      setBlogs(blogs.map(n => n.id === id ? { ...n, ...{ likes: response.likes } } : n))
+      setBlogs(blogs.map(n => n.id === id ? { ...n, ...{ likes: response.likes } } : n).sort((a,b) => b.likes - a.likes))
     } catch (exception) {
       showNotification('couldn\'t like blog', 'error')
     }
